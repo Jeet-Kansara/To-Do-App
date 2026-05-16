@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskFlow — To-Do List</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="app">
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-logo">Task<span>Flow</span></div>
+          <div class="brand-sub">Productivity Suite</div>
+        </div>
+
+        <div class="sidebar-section-label">Views</div>
+        <div id="filter-list">
+          <button
+            class="filter-btn active"
+            data-filter="all"
+            onclick="setFilter('all')"
+          >
+            <span class="icon">☰</span> All Tasks
+            <span class="filter-count" id="count-all">0</span>
+          </button>
+          <button
+            class="filter-btn"
+            data-filter="active"
+            onclick="setFilter('active')"
+          >
+            <span class="icon">◉</span> Active
+            <span class="filter-count" id="count-active">0</span>
+          </button>
+          <button
+            class="filter-btn"
+            data-filter="completed"
+            onclick="setFilter('completed')"
+          >
+            <span class="icon">✓</span> Completed
+            <span class="filter-count" id="count-completed">0</span>
+          </button>
+
+          <hr class="sidebar-divider" />
+
+          <button
+            class="filter-btn"
+            data-filter="high"
+            onclick="setFilter('high')"
+          >
+            <span class="icon" style="color: #c0392b">▲</span> High Priority
+            <span class="filter-count" id="count-high">0</span>
+          </button>
+          <button
+            class="filter-btn"
+            data-filter="medium"
+            onclick="setFilter('medium')"
+          >
+            <span class="icon" style="color: #b07a18">▬</span> Medium
+            <span class="filter-count" id="count-medium">0</span>
+          </button>
+          <button
+            class="filter-btn"
+            data-filter="low"
+            onclick="setFilter('low')"
+          >
+            <span class="icon" style="color: #2d7a4f">▼</span> Low Priority
+            <span class="filter-count" id="count-low">0</span>
+          </button>
+
+          <hr class="sidebar-divider" />
+
+          <button
+            class="filter-btn"
+            data-filter="today"
+            onclick="setFilter('today')"
+          >
+            <span class="icon">📅</span> Due Today
+            <span class="filter-count" id="count-today">0</span>
+          </button>
+          <button
+            class="filter-btn"
+            data-filter="overdue"
+            onclick="setFilter('overdue')"
+          >
+            <span class="icon">⚠</span> Overdue
+            <span class="filter-count" id="count-overdue">0</span>
+          </button>
+        </div>
+
+        <div class="stats-footer">
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-num" id="stat-total">0</div>
+              <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num" id="stat-done">0</div>
+              <div class="stat-label">Done</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num" id="stat-pct">0%</div>
+              <div class="stat-label">Rate</div>
+            </div>
+          </div>
+          <div class="progress-bar-wrap">
+            <div
+              class="progress-bar-fill"
+              id="progress-fill"
+              style="width: 0%"
+            ></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main">
+        <div class="main-header">
+          <h1 class="main-title">
+            <span id="filter-title">All Tasks</span>
+            <span class="date-pill" id="today-date"></span>
+          </h1>
+          <select class="sort-select" id="sort-select" onchange="renderTasks()">
+            <option value="default">Sort: Default</option>
+            <option value="priority">Sort: Priority</option>
+            <option value="due">Sort: Due Date</option>
+            <option value="az">Sort: A → Z</option>
+            <option value="date-added">Sort: Date Added</option>
+          </select>
+        </div>
+
+        <!-- Search -->
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            class="search-input"
+            id="search-input"
+            placeholder="Search tasks…"
+            oninput="renderTasks()"
+          />
+        </div>
+
+        <!-- Input Card -->
+        <div class="input-card">
+          <div class="input-row">
+            <input
+              type="text"
+              class="task-input"
+              id="task-input"
+              placeholder="Add a new task…"
+              onkeydown="handleInputKey(event)"
+            />
+            <button class="add-btn" onclick="addTask()">
+              <span style="font-size: 1.1rem">+</span> Add Task
+            </button>
+          </div>
+          <div class="meta-row">
+            <select class="meta-select" id="priority-select">
+              <option value="medium">⚡ Medium Priority</option>
+              <option value="high">🔴 High Priority</option>
+              <option value="low">🟢 Low Priority</option>
+            </select>
+            <select class="meta-select" id="category-select">
+              <option value="General">📋 General</option>
+              <option value="Work">💼 Work</option>
+              <option value="Personal">👤 Personal</option>
+              <option value="Health">💪 Health</option>
+              <option value="Finance">💰 Finance</option>
+              <option value="Shopping">🛒 Shopping</option>
+            </select>
+            <input
+              type="date"
+              class="due-input"
+              id="due-input"
+              title="Due date"
+            />
+          </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="actions-bar">
+          <div class="actions-left">
+            <span class="actions-count" id="actions-count"
+              ><strong>0</strong> tasks</span
+            >
+            <button class="select-all-btn" onclick="completeAll()">
+              ✓ Complete all visible
+            </button>
+          </div>
+          <button class="clear-btn" onclick="clearCompleted()">
+            🗑 Clear completed
+          </button>
+        </div>
+
+        <!-- Tasks -->
+        <div class="tasks-section" id="tasks-section"></div>
+      </main>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
